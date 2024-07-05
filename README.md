@@ -1,7 +1,7 @@
 # Credit Loan Web App
 Built with ASP.Net Web API - React.js 
 
-##Settings
+## Settings
 - DB connection string, ftp url, ftp folder, csv filename :
 	\CreditLoanApi\appsettings.json 
 - Tables ddl script :
@@ -11,7 +11,7 @@ Built with ASP.Net Web API - React.js
 - Template Csv :
 	\CreditLoanApi\TemplateCsv\cust-payment.csv
 	
-##Backend features
+## Backend features
 - JWT Authorization
 - ILogger
 - Swagger 
@@ -22,7 +22,7 @@ Built with ASP.Net Web API - React.js
 - Icon : font awesome
 - CSS : custom.css, dialog.css
 
-##Noteable packages
+## Noteable packages
 Backend libs (CreditLoanApi.csproj )
 - .Net 6.0
 - Microsoft.EntityFrameworkCore 7.0.20
@@ -47,8 +47,7 @@ Frontend libs
 - bootstrap-icons: 1.11.3,
 - font-awesome 4.7.0 (import at index.html)
 
-
-##Folder Exclude
+## Folder Exclude
 \CreditLoanApi\bin
 \CreditLoanReactApp\ClientApp\node_modules
 
