@@ -1,0 +1,111 @@
+/* Provide sufficient contrast against white background */
+a {
+  color: #0366d6;
+}
+
+code {
+  color: #E01A76;
+}
+
+#detailData {
+    background-color: #fff;
+}
+
+table {
+    background-color: #fff;
+}
+
+.label-user {
+    font-size: 0.7em;
+}
+
+.user-name {
+    color:mediumblue;
+    font-weight:bolder;    
+}
+
+.span-value {
+    margin: 3px 2px 4px 4px;    
+    color: darkslategray;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+.span-label {
+    margin: 3px 2px 4px 4px;
+    padding-left: 10px;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.btn-clear {
+    color: #fff;
+    background-color: forestgreen;
+    border-color: forestgreen;
+}
+
+.btn-clear:hover {
+    color: #fff;
+    background-color: green;
+    border-color: green;
+}
+
+.btn-xls {
+    color: #fff;
+    background-color: olivedrab;
+    border-color: darkolivegreen;
+}
+
+.btn-xls:hover {
+    color: #fff;
+    background-color: olivedrab;
+    border-color: darkolivegreen;
+}
+
+.btn-csv {
+    color: #fff;
+    background-color: mediumslateblue;
+    border-color: darkslateblue;
+}
+
+.btn-csv:hover {
+    color: #fff;
+    background-color: mediumslateblue;
+    border-color: mediumslateblue;
+}
+
+.btn-pdf {
+    color: #fff;
+    background-color: midnightblue;
+    border-color: midnightblue;
+}
+
+.btn-pdf:hover {
+    color: #fff;
+    background-color: blue;
+    border-color: blue;
+}
+
+tr:hover {
+    background-color: beige;
+    cursor: pointer;
+}
+
+.main-page {
+    background-color: #fff; /* For browsers that do not support gradients */
+    background-image: linear-gradient(to bottom right, gainsboro, ghostwhite);
+    /*background-image: linear-gradient(to bottom right, darkgrey , dimgrey);*/
+    padding: 30px;
+    border-radius: 5px 10px;
+}
+
+.x-label {
+    margin: 7px 10px 5px 10px;
+    /*font-weight:bold;*/
+    font-size: 1.1em;
+}

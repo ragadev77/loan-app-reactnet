@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreditLoanApi", "CreditLoanApi\CreditLoanApi.csproj", "{4D6F00CB-2365-4394-B187-7668CA96C9EC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreditLoanReactApp", "CreditLoanReactApp\CreditLoanReactApp.csproj", "{474C5705-B375-4BF8-A9A2-3E77F2842B31}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4D6F00CB-2365-4394-B187-7668CA96C9EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D6F00CB-2365-4394-B187-7668CA96C9EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D6F00CB-2365-4394-B187-7668CA96C9EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D6F00CB-2365-4394-B187-7668CA96C9EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{474C5705-B375-4BF8-A9A2-3E77F2842B31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{474C5705-B375-4BF8-A9A2-3E77F2842B31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{474C5705-B375-4BF8-A9A2-3E77F2842B31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{474C5705-B375-4BF8-A9A2-3E77F2842B31}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C75D07F6-8A3E-4739-A028-EA64C080B60E} = {39ED2D26-B87D-4A60-BE13-E2A1928A731C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A008AB2E-4BA4-448A-A8CE-9E1C11CBE797}
+	EndGlobalSection
+EndGlobal

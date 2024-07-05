@@ -1,0 +1,31 @@
+﻿a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+a.navbar-brand:hover {
+    font-weight: bold;
+}
+
+a.text-dark:hover {
+    /*background-color: dimgrey;*/
+    background-color: #fff; /* For browsers that do not support gradients */
+    background-image: linear-gradient(to bottom right, gainsboro, ghostwhite);
+    font-weight: bolder;
+    border-top-right-radius: 20%;
+}
+
+html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
