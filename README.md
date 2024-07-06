@@ -10,7 +10,7 @@ Visual studio solution consist of 2 projects :
 1. Open .sln file using visual studio
 2. Configure multiple startup projects
    ![SS startup](https://github.com/ragadev77/loan-app-reactnet/blob/main/set_multi_startup_projects.png)
-3. Build solution and start project ( will load 2 browser for backend (Swagger) and frontend (React)
+3. Build solution and start project : will load 2 browser for backend (Swagger) and frontend (React)
 4. Execute tables ddl script from \CreditLoanApi\creditloan_ddl.sql
 5. Setup or modify database connection string, ftp url, ftp folder name, csv filename from \CreditLoanApi\appsettings.json 
 6. Setup or modify base url for both project at \Properties\launchSettings.json on both projects
