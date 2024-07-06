@@ -1,6 +1,23 @@
 # Credit Loan Web App
 Built with ASP.Net Web API - React.js 
 
+## Description
+Visual studio solution consist of 2 projects :
+1. Web API : CreditLoanApi.csproj
+2. React Js : CreditLoanReactApp.csproj
+
+## Quick Start
+1. Open .sln file using visual studio
+2. Build solution and run (will load 2 browser for backend (Swagger) and frontend (React)
+3. Execute tables ddl script from \CreditLoanApi\creditloan_ddl.sql
+4. Setup or modify database connection string, ftp url, ftp folder name, csv filename from \CreditLoanApi\appsettings.json 
+5. Setup or modify base url for both project at \Properties\launchSettings.json on both projects
+6. If you do step no.5 then you have to change the api url for the frontend at \CreditLoanReactApp\ClientApp\.env
+7. Csv template at \CreditLoanApi\TemplateCsv\cust-payment.csv
+	- note : csv headers are fixed due to mapped via class approach (PaymentDto), not dynamic yet.
+8. Fixing missing packages at react project :
+	 > npm audit fix at \CreditLoanReactApp\ClientApp
+	
 ## Settings
 - DB connection string, ftp url, ftp folder, csv filename :
 	\CreditLoanApi\appsettings.json 
@@ -16,7 +33,8 @@ Built with ASP.Net Web API - React.js
 - ILogger
 - Swagger 
 - FTP Download File
-##Frontend features
+- Read csv
+## Frontend features
 - React JS
 - Export to csv, excel
 - Icon : font awesome
@@ -45,9 +63,4 @@ Frontend libs
 - jquery: 3.6.4,
 - bootstrap: 5.2.3,
 - bootstrap-icons: 1.11.3,
-- font-awesome 4.7.0 (import at index.html)
-
-## Folder Exclude
-\CreditLoanApi\bin
-\CreditLoanReactApp\ClientApp\node_modules
-
+- font-awesome 4.7.0 (at index.html)
