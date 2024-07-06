@@ -1,8 +1,5 @@
-import { Counter } from "./components/Counter";
-import { FetchData } from "./components/FetchData";
 import { Home } from "./components/Home";
 import Login from "./components//creditLoan/Login";
-import TestModal from "./TestModal";
 import { DbLoggerPage } from "./components/creditLoan/DbLoggerPage";
 import LoanRequest from "./components/creditLoan/LoanRequest";
 import Customer from "./components/creditLoan/Customer";
@@ -17,14 +14,6 @@ const AppRoutes = [
         element: <Home />
     },
     {
-        path: '/counter',
-        element: <Counter />
-    },
-    {
-        path: '/fetch-data',
-        element: <FetchData />
-    },
-    {
      //   index: true,
         path: '/login',
         element: <Login />
@@ -32,10 +21,6 @@ const AppRoutes = [
     {
         path: '/customer',
         element: <Customer />
-    },
-    {
-        path: '/test-modal',
-        element: <TestModal />
     },
     {
         path: '/loan-request',
