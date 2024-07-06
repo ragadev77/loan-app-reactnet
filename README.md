@@ -19,7 +19,10 @@ Visual studio solution consist of 2 projects :
 	- note : csv headers are fixed due to mapped via class approach (PaymentDto), not dynamic yet.
 9. Fixing missing packages at react project (there should be none):
 	 > open terminal at \CreditLoanReactApp\ClientApp : npm audit fix
-	
+
+## Video run app demo
+loan-app-demo.mp4
+ 
 ## Settings
 - DB connection string, ftp url, ftp folder, csv filename :
 	\CreditLoanApi\appsettings.json 
