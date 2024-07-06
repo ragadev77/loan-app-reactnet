@@ -47,3 +47,13 @@ CREATE TABLE CreditLoanDetail (
 	PaymentDate datetime,
 	CONSTRAINT PK_CreditLoanDetail PRIMARY KEY (Id)
 );
+
+CREATE TABLE db_logger (
+	id int IDENTITY(1,1) NOT NULL,
+	log_name varchar(50) NULL,
+	log_category varchar(20) NULL,
+	log_message text NULL,
+	log_error varchar(100) NULL,
+	log_code int NULL,
+	log_time datetime NULL
+);
