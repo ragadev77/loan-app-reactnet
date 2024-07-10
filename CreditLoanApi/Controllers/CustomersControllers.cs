@@ -52,17 +52,17 @@ namespace CreditLoan.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("list")]
-        public async Task<IActionResult> ListCustomer(int page, int pageSize)
+        public async Task<IActionResult> ListCustomer([FromBody] SearchParameterDto searchParameter)
         {
             _logger.LogInformation(String.Format("[ List Customer Start at {0}]", DateTime.Now.ToString()));
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var data = await _custService.ListCustomer(page,pageSize);
+                var data = await _custService.ListCustomer(searchParameter);
                 if (data != null)
-                    return Ok(ApiResult.success(200, "List Success", data));
+                    return Ok(ApiResult.success(200, "Data Found", data));
                 else
                     return NotFound(ApiResult.failed(404, "No Data Found"));
             }

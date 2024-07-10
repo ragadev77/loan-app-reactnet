@@ -41,19 +41,19 @@ function CustomerListDialog({ setShowDialog, data, setData }) {
 
         try {
             //start fetch
-            const page = 1;
-            const pageSize = 10;
-            const apiUrl = process.env.REACT_APP_URL_CREDITLOAN_CUSTOMER + 'list?page=' + page + '&pageSize=' + pageSize;
+            const apiUrl = process.env.REACT_APP_URL_CREDITLOAN_CUSTOMER + 'list';
+            const initSearchParams = { page: 1, pageSize: 10, nameEmail: '', loanAmount: 0, balance: 0, status: '' }            
 
             setPageMessage('Load data...');
 
             console.log(apiUrl);
             const response = await fetch(apiUrl, {
-                    method: 'GET',
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         //'Authorization': 'Bearer' + token
-                    }
+                    },
+                    body: JSON.stringify(initSearchParams)
                 });
 
             const data = await response.json();
@@ -91,15 +91,15 @@ function CustomerListDialog({ setShowDialog, data, setData }) {
                 <button className="close-icon" onClick={() => setShowDialog(false)} > <i className="fa fa-close"></i></button>
                 <h3 id="tabelLabel" >Customer Dialog</h3>
                 <hr />
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Selected id</span>
+                <div className="input-group">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="basic-addon1">Selected id</span>
                     </div>
-                    <input type="text" class="form-control" placeholder="Selected Id" aria-label="Username" aria-describedby="basic-addon1"
-                        value={selectedId}
+                    <input type="text" className="form-control" placeholder="Selected Id" aria-label="Username" aria-describedby="basic-addon1"
+                        value={selectedId} onChange={(e) => setSelectedId(e.target.value)}
                     />
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button"
+                    <div className="input-group-append">
+                        <button className="btn btn-outline-secondary" type="button"
                             onClick={handleConfirm}>Confirm
                         </button>
                     </div>

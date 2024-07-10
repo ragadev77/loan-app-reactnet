@@ -22,8 +22,18 @@ namespace CreditLoanApi.Repositories
         }
         public async Task<Payment> Get(string paymentId)
         {
-            var result = _context.payments.SingleOrDefault(c => c.PaymentId == paymentId);
-            return result;
+            try
+            {
+                var result = await _context.payments
+                                .Where(x => x.PaymentId == paymentId )
+                                .FirstOrDefaultAsync();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.InnerException.Message);
+                return null;
+            }
         }
 
         /* region non-query */

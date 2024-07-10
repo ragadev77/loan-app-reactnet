@@ -1,7 +1,7 @@
 ﻿import React, { useState, useRef, useEffect } from "react";
-import ExportCsv from './ExportCsv';
-import ExportExcel from "./ExportExcel";
-import CustomerListDialog from "./CustomerListDialog";
+import ExportCsv from './exports/ExportCsv';
+import ExportExcel from "./exports/ExportExcel";
+import CustomerListDialog from "./dialogs/CustomerListDialog";
 
 function LoanDetail() {
     const [show, setShow] = useState(false);
@@ -88,7 +88,7 @@ const FormHeader = ({ customer, setCustomer, setDetails, setPageMessage, setBtnD
             //start fetch
             event.preventDefault();
 
-            const apiUrl = process.env.REACT_APP_URL_CREDITLOAN + 'report/' + customer.customerId;
+            const apiUrl = process.env.REACT_APP_URL_CREDITLOAN + 'search/' + customer.customerId;
             console.log(apiUrl);
             const response = await fetch(apiUrl, {
                 method: 'GET',
@@ -158,7 +158,7 @@ const FormHeader = ({ customer, setCustomer, setDetails, setPageMessage, setBtnD
                         <div className="col-8">
                             <div className="row">
                                 <div className="col-10 px-2">
-                                    <input type="text" class="form-control" id="customerId" placeholder="Select Customer Id" aria-label="CustomerId" aria-describedby="basic-addon1"
+                                    <input type="text" className="form-control" id="customerId" placeholder="Select Customer Id" aria-label="CustomerId" aria-describedby="basic-addon1"
                                         value={customer.customerId} />
                                 </div>
                                 <div className="col-2 justify-content-end d-flex">
@@ -247,8 +247,6 @@ const FormHeader = ({ customer, setCustomer, setDetails, setPageMessage, setBtnD
 
 const FormDetail = ({ details, btnDisabled}) => {
     const tableRef = useRef(null);
-
-    const exportPdfId = '#detailData';
     
 return (
     <div>

@@ -4,32 +4,39 @@ using System.ComponentModel;
 
 namespace CreditLoanApi.Models
 {
-    [Table("db_logger", Schema = "dbo")]
+    [Table("app_logger", Schema = "dbo")]
     public class DbLogger
     {
         public DbLogger() { }
         [Key]
-        [Column("id", TypeName = "int")]
+        [Column(TypeName = "int")]
         public int id{ get; set; }
 
-        [Column("log_name", TypeName = "varchar(50)")]
-        public string log_name { get; set; }
+        [Column(TypeName = "varchar(10)")]
+        public string LogApp { get; set; }
         
-        [Column("log_category", TypeName = "varchar(20)")]
-        public string log_category { get; set; }
+        [Column(TypeName = "varchar(20)")]
+        public string LogMod { get; set; }
 
-        [Column("log_message", TypeName = "text")]
-        public string log_message { get; set; }
+        [Column(TypeName = "varchar(50)")]
+        public string LogModDetail { get; set; }
 
-        [Column("log_error", TypeName = "varchar(100)")]
-        public string log_error { get; set; }
+        [Column(TypeName = "varchar(10)")]
+        public string LogType { get; set; }
 
-        [Column("log_code")]
-        public int log_code { get; set; }
+        [Column(TypeName = "varchar(50)")]
+        public string LogName { get; set; }
+        [Column(TypeName = "int")]
+        public int LogCode { get; set; }
+        [Column(TypeName = "varchar(200)")]
+        public string LogMessage { get; set; }
 
-        [Column("log_time")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
-        public DateTime log_time { get; set; }
+        [Column(TypeName = "datetime")]
+        //[DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime LogTime { get; set; }
+
+        [Column(TypeName = "varchar(100)")]
+        public string LogSource { get; set; }
 
     }
 }

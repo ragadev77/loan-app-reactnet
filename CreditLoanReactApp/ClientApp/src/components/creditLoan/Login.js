@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
-import './Login.css';
-import { DbLogger } from './DbLogger';
+//import './Login.css';
+//import { DbLogger } from './DbLogger';
 
 function Login() {
     const [userEmail, setUserEmail] = useState('');
@@ -47,7 +47,7 @@ function Login() {
     };
 
     const handleSignup = (event) => {
-        navigate('/customer');
+        navigate('/user');
     };
 
     const handleUserEmailChange = (event) => {
@@ -60,7 +60,7 @@ function Login() {
 
     return (
         <div>
-            <div className="div-center">
+            <div className="div-center login-page">
                 <div className="content">
                     <h3>Login</h3>
                     <hr />

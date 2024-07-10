@@ -1,7 +1,6 @@
 ﻿import React, { useState, useRef, useEffect } from "react";
-import { useDownloadExcel } from "react-export-table-to-excel"
-import ExportCsv from './ExportCsv';
-import ExportExcel from "./ExportExcel";
+import ExportCsv from './exports/ExportCsv';
+import ExportExcel from "./exports/ExportExcel";
 
 function Payment() {
     const [btnDisabled, setBtnDisabled] = useState(true);
@@ -103,8 +102,8 @@ const FormDetail = ({ details, setDetails, setPageMessage, btnDisabled, setBtnDi
         <div>
             <div className="row">
                 <div className="col-8">
-                    <ExportCsv data={details} fileName="creditloan_report" disabled={btnDisabled} />
-                    <ExportExcel excelData={details} fileName="creditloan_report" disabled={btnDisabled} />
+                    <ExportCsv data={details} fileName="payment_report" disabled={btnDisabled} />
+                    <ExportExcel excelData={details} fileName="payment_report" disabled={btnDisabled} />
                 </div>
                 <div className="col-4 justify-content-end d-flex">
                     <button onClick={handleSync} className="btn btn-success"> <i className="fa fa-arrow-circle-down"></i>&nbsp; Start Sync</button>

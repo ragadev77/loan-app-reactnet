@@ -18,7 +18,9 @@ const ExportExcel = ({ excelData, fileName, disabled }) => {
     }
 
     return (
-        <button className="btn btn-xls" onClick={(e) => handleExportExcel(fileName)} disabled={disabled}><i className="fa fa-table"></i>&nbsp;Export Excel</button>
+        <button className="btn btn-outline-primary" onClick={(e) => handleExportExcel(fileName)} disabled={disabled}>
+            <i className="fa fa-table"></i>&nbsp;Export Excel
+        </button>
     );
 }
 

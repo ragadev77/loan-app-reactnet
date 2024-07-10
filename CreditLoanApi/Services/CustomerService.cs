@@ -14,22 +14,71 @@ namespace CreditLoanApi.Services
     public class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository _custRepository;
+        private readonly ICreditLoanDetailRepository _loanRepository;
         private readonly IUserRepository _userRepository;
 
         private readonly ILogger<CustomerService> _logger;
         DateTime localDateTime, univDateTime;
 
-        public CustomerService(ICustomerRepository custRepository, IUserRepository userRepository, ILogger<CustomerService> logger) 
+        public CustomerService(ICustomerRepository custRepository, ICreditLoanDetailRepository loanRepository
+            , IUserRepository userRepository, ILogger<CustomerService> logger) 
         {
             _custRepository = custRepository;
+            _loanRepository = loanRepository;
             _userRepository = userRepository;
             _logger = logger;
         }
 
-        public Task<IEnumerable<Customer>> ListCustomer(int page, int pageSize)
+        public async Task<List<Customer>> ListCustomer(SearchParameterDto prm)
         {
-            var data = _custRepository.List();
-            return data;
+            List<Customer> result = null;
+
+            var cust =  await _custRepository.List();
+
+            if (prm.NameEmail != string.Empty)
+            {
+                result = (from c in cust
+                              where (c.Name.ToLower().Contains(prm.NameEmail.ToLower()) || c.Email.ToLower().Contains(prm.NameEmail.ToLower()))
+                              select c).ToList();
+
+            }
+            if (prm.Status != string.Empty)
+            {
+                switch (prm.Status)
+                {
+                    case "new":
+                        result = 
+                            result != null ? result.Where(x => x.LoanAmount == 0).ToList() 
+                                    : cust.Where(x => x.LoanAmount == 0).ToList();
+                        break;
+                    case "complete":
+                        result =
+                            result != null ? result.Where(x => x.LoanAmount > 0 && x.Outstanding == 0 ).ToList()
+                                    : cust.Where(x => x.LoanAmount > 0 && x.Outstanding == 0).ToList();
+                        break;
+                    case "outstanding":
+                        result =
+                            result != null ? result.Where(x => x.Outstanding > 0).ToList()
+                                    : cust.Where(x => x.Outstanding > 0).ToList();
+                        break;
+                    default:
+                        result = result != null ? result : cust.ToList();
+                        break;
+                }
+            }
+            if (prm.Balance > 0)
+            {
+                result = result!=null ? result.Where(x => x.Balance >= prm.Balance).ToList()
+                        : result = cust.Where(x => x.Balance > prm.Balance).ToList();
+            }
+            if (prm.LoanAmount > 0)
+            {
+                result = result != null ? result.Where(x => x.LoanAmount >= prm.LoanAmount).ToList()
+                        : result = cust.Where(x => x.LoanAmount > prm.LoanAmount).ToList();
+            }
+
+            result = result!=null ? result : cust.ToList();
+            return result;
         }
 
         public async Task<Customer> GetCustomer(int _id)

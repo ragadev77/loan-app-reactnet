@@ -2,8 +2,9 @@
 
 namespace CreditLoanApi.Dtos
 {
-    public class ReportPaymentDto
+    public class CustomerLoanDto
     {
+        public string RowId { get; set; }
         public int CustomerId { get; set; }
         public string CustomerName { get; set; } 
         public decimal LoanAmount { get; set; }

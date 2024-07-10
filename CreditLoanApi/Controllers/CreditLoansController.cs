@@ -40,43 +40,17 @@ namespace CreditLoan.Controllers
             _logger = logger;
             _loanRepository = loanRepository;
             _configuration = configuration;
-        }
+        }      
 
-        [HttpGet]
-        [Route("report/{customerId}")]
-        public async Task<IActionResult> ReportByCustomerId(int customerId)
-        {
-            _logger.LogInformation(String.Format(">>> GetCreditLoansByCustomerId Start at {0} <<<", DateTime.Now.ToString()));
-            try
-            {
-                var result = _loanService.ReportByCustomer(customerId);
-                if (result != null)
-                    return Ok(ApiResult.success(200, "Data Found", result));
-                else
-                {
-                    return BadRequest(ApiResult.failed(400, "No Data Found"));
-                }
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"GetCreditLoansByCustomerId Error: {ex.Message}");
-                return BadRequest(ApiResult.failed(400, $"Exception: {ex.Message}"));
-            }
-            finally
-            {
-                _logger.LogInformation(String.Format(">>> GetCreditLoansByCustomerId End at {0} <<<", DateTime.Now.ToString()));
-
-            }
-        }
         [HttpGet]
         [Route("report")]
-        public async Task<IActionResult> PaymentReportMonthly([FromQuery] int month, [FromQuery] int year)
+        public async Task<IActionResult> PaymentReportMonthly([FromQuery] int month, [FromQuery] int year
+            , [FromQuery] int page, [FromQuery] int pageSize)
         {
             _logger.LogInformation(String.Format(">>> PaymentReportMonthly Start at {0} <<<", DateTime.Now.ToString()));
             try
             {
-                var result = _loanService.ReportAll(month, year);                
+                var result = _loanService.GetCustomerLoansByPeriod(month, year, page, pageSize);                
                 if (result != null && result.Count > 0)
                     return Ok(ApiResult.success(200, "Data Found", result));
                 else
@@ -98,7 +72,33 @@ namespace CreditLoan.Controllers
         }
 
         [HttpGet]
-        [Route("request/{customerId}")]
+        [Route("list")]
+        public async Task<IActionResult> GetLoanList()
+        {
+            _logger.LogInformation(String.Format(">>> GetLoanList start {0} <<<", DateTime.Now.ToString()));
+            try
+            {
+                var result = _loanService.GetListLoan();
+                if (result.Count > 0)
+                    return Ok(ApiResult.success(200, "Data Found", result));
+                else
+                {
+                    return BadRequest(ApiResult.failed(400, "No Data Found"));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"GetLoanList Error: {ex.Message}");
+                return BadRequest(ApiResult.failed(400, $"Exception: {ex.Message}"));
+            }
+            finally
+            {
+                _logger.LogInformation(String.Format(">>> GetLoanList end at{0} <<<", DateTime.Now.ToString()));
+            }
+        }
+        [HttpGet]
+        [Route("search/{customerId}")]
         public async Task<IActionResult> GetLoanByCustomer(int customerId)
         {
             _logger.LogInformation(String.Format(">>> GetLoanByCustomer start {0} <<<", DateTime.Now.ToString()));
@@ -179,7 +179,7 @@ namespace CreditLoan.Controllers
                 if (payments!=null)
                     return Ok(ApiResult.success(200, "Payment Sync Success", payments));
                 else
-                    return BadRequest(ApiResult.failed(400, "Payment Sync Failed"));
+                    return BadRequest(ApiResult.failed(400, "Payment Sync Failed, please check your csv data"));
 
             }
             catch (Exception ex)

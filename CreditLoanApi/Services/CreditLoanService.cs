@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Data;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Reflection.Metadata;
 
@@ -30,22 +31,22 @@ namespace CreditLoanApi.Services
             _customerRepository = customerRepository;
             _logger = logger;
         }
-
-        public List<ReportPaymentDto> ReportAll(int month, int year)
+        
+        public List<CustomerLoanDto> GetCustomerLoansByPeriod(int month, int year, int page, int pageSize)
         {
-            List<ReportPaymentDto> result = null;
+            List<CustomerLoanDto> result = null;
             try
             {
-                var customer = _customerRepository.List().Result.ToList();
-                var details = _detailRepository.List().Result.ToList();
-
+                int rowNo = 0;
+                var customer = _customerRepository.List().Result;
+                var details = _detailRepository.List().Result;
                 var join = from cust in customer
                                 join loan in details
                                 on cust.CustomerId equals loan.CustomerId
-                           //where d.PaymentDate.Month.Equals(month)
-                           //     where d.PaymentDate.Year.Equals(year)
-                            select new ReportPaymentDto
+                                   // where loan.PaymentDate.Month.Equals(month) && loan.PaymentDate.Year.Equals(year)
+                            select new CustomerLoanDto
                                 {
+                                    RowId = cust.CustomerId + loan.RowNo.ToString(),
                                     CustomerId = cust.CustomerId,
                                     CustomerName = cust.Name,
                                     LoanAmount = cust.LoanAmount,
@@ -61,39 +62,52 @@ namespace CreditLoanApi.Services
                                     PaymentDate =  loan.PaymentDate,
                                     PaymentStatus = loan.PaymentStatus
                                 };
-                //var res = join.Distinct().ToList();
 
                 var list = join.ToList();
-                return list;
+                if (page == 1)
+                {
+                    result = list.Take(pageSize).ToList();
+                }
+                else
+                {
+                    result = list.Skip((page * pageSize) - pageSize).Take(pageSize).ToList();
+                }
+                
+                return result;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Service GetByCustomer Error: " + ex.Message);
+                Console.WriteLine("Service GetCustomerLoansByPeriod Error: " + ex.Message);
                 return result;
             }           
 
         }
-
-        public CreditLoanDto ReportByCustomer(int customerId)
+   
+        public List<CreditLoanDto> GetListLoan()
         {
-            CreditLoanDto result = null;
+            List<CreditLoanDto> result = new List<CreditLoanDto>();
             try
             {
-                var customer = _customerRepository.Get(customerId).Result;
+                var customer = _customerRepository.List().Result;                
                 if (customer != null)
                 {
-                    var details = _detailRepository.GetByCustomer(customerId).Result;
-                    result = new CreditLoanDto()
+                    foreach(var item in customer)
                     {
-                        Customer = customer,
-                        Details = details
-                    };
+                        var details = _detailRepository.GetByCustomer(item.CustomerId).Result;
+                        CreditLoanDto resultChild = new CreditLoanDto()
+                        {
+                            Customer = item,
+                            Details = details
+                        };
+                        result.Add(resultChild);
+
+                    }
                 }
                 return result;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Service GetByCustomer Error: " + ex.Message);
+                Console.WriteLine("Service GetListLoan Error: " + ex.Message);
                 return null;
             }
 
@@ -129,15 +143,12 @@ namespace CreditLoanApi.Services
 
         public CreditLoanDto CreateLoan(LoanRequestDto loanRequest)
         {
-            //var result = new ApiResult();
             CreditLoanDto result = null;
             bool formulaCreated = false;
             decimal balanceAmt = 0;
             decimal outstandingAmt = 0;
             try
             {
-                /* generate LoanCode format: crloan-c[CustomerId]/lh[Id] , i.e : crloan-c12/lh23 */
-                //string loanCode = $"crloan-c{loanRequest.CustomerId}";
 
                 var cust = _customerRepository.Get(loanRequest.CustomerId).Result;
                 if (cust != null)

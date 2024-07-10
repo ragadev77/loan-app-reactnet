@@ -35,22 +35,19 @@ export class NavMenu extends Component {
                                 <NavLink tag={Link} className="text-dark" to="/login"><i className="fa fa-sort-asc mx-1"></i>Login</NavLink>
                             </NavItem>
                             <NavItem>
-                                <NavLink tag={Link} className="text-dark" to="/customer-list"><i className="fa fa-caret-right mx-1"></i>List Customer</NavLink>
+                                <NavLink tag={Link} className="text-dark" to="/customer"><i className="fa fa-caret-right mx-1"></i>Customers</NavLink>
                             </NavItem>
                             <NavItem>
                                 <NavLink tag={Link} className="text-dark" to="/loan-request"><i className="fa fa-caret-right mx-1"></i>Loan Request</NavLink>
                             </NavItem>
                             <NavItem>
-                                <NavLink tag={Link} className="text-dark" to="/loan-detail"><i className="fa fa-caret-right mx-1"></i>View Loan</NavLink>
-                            </NavItem>
-                            <NavItem>
                                 <NavLink tag={Link} className="text-dark" to="/payment"><i className="fa fa-caret-right mx-1"></i>Payment</NavLink>
                             </NavItem>
                             <NavItem>
-                                <NavLink tag={Link} className="text-dark" to="/customer"><i className="fa fa-caret-right mx-1"></i>User</NavLink>
+                                <NavLink tag={Link} className="text-dark" to="/report-monthly"><i className="fa fa-caret-right mx-1"></i>Report</NavLink>
                             </NavItem>
                             <NavItem>
-                                <NavLink tag={Link} className="text-dark" to="/report-monthly"><i className="fa fa-caret-right mx-1"></i>Report</NavLink>
+                                <NavLink tag={Link} className="text-dark" to="/user"><i className="fa fa-caret-right mx-1"></i>User</NavLink>
                             </NavItem>
                         </ul>
                     </Collapse>

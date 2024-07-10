@@ -48,12 +48,16 @@ CREATE TABLE CreditLoanDetail (
 	CONSTRAINT PK_CreditLoanDetail PRIMARY KEY (Id)
 );
 
-CREATE TABLE db_logger (
-	id int IDENTITY(1,1) NOT NULL,
-	log_name varchar(50) NULL,
-	log_category varchar(20) NULL,
-	log_message text NULL,
-	log_error varchar(100) NULL,
-	log_code int NULL,
-	log_time datetime NULL
+CREATE TABLE AppLogger (
+	Id int IDENTITY(1,1) NOT NULL,
+	LogApp varchar(10) NULL,
+	LogMod varchar(20) NULL,
+	LogModDetail varchar(50) NULL,
+	LogType varchar(10) NULL,
+	LogName varchar(50) NULL,
+	LogCode int NULL,
+	LogMessage varchar(200) NULL,
+	LogTime datetime NULL,
+	LogSource varchar(100) NULL,
+	CONSTRAINT PK_AppLogger PRIMARY KEY(Id)
 );

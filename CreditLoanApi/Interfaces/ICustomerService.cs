@@ -8,7 +8,7 @@ namespace CreditLoanApi.Interfaces
 {
     public interface ICustomerService
     {
-        Task<IEnumerable<Customer>> ListCustomer(int page, int pageSize);
+        Task<List<Customer>> ListCustomer(SearchParameterDto prm);
         Task<Customer> GetCustomer(int id);
         Task<string> CreateCustomer(CreateCustomerDto user);
         Task<int> UpdateCustomer(Customer user);

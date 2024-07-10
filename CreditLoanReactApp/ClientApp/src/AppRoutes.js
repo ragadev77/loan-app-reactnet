@@ -1,11 +1,11 @@
 import { Home } from "./components/Home";
 import Login from "./components//creditLoan/Login";
-import { DbLoggerPage } from "./components/creditLoan/DbLoggerPage";
+//import { DbLoggerPage } from "./components/creditLoan/DbLoggerPage";
 import LoanRequest from "./components/creditLoan/LoanRequest";
-import Customer from "./components/creditLoan/Customer";
+import User from "./components/creditLoan/User";
 import Payment from "./components/creditLoan/Payment";
 import ReportMonthly from "./components/creditLoan/ReportMonthly";
-import CustomerList from "./components/creditLoan/CustomerList";
+import Customer from "./components/creditLoan/Customer";
 import LoanDetail from "./components/creditLoan/LoanDetail";
 
 const AppRoutes = [
@@ -19,8 +19,8 @@ const AppRoutes = [
         element: <Login />
     },
     {
-        path: '/customer',
-        element: <Customer />
+        path: '/user',
+        element: <User />
     },
     {
         path: '/loan-request',
@@ -39,12 +39,8 @@ const AppRoutes = [
         element: <Payment />
     },
     {
-        path: '/customer-list',
-        element: <CustomerList />
-    },
-    {
-        path: '/dblogger',
-        element: <DbLoggerPage />
+        path: '/customer',
+        element: <Customer />
     }
 
 ];

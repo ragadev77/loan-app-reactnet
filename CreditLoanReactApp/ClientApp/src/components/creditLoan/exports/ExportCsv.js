@@ -29,7 +29,7 @@ const DownloadCSV = ({ data, fileName, disabled }) => {
     };
 
     return (
-        <button className="btn btn-csv" onClick={downloadCSV} disabled={disabled}>
+        <button className="btn btn-outline-primary" onClick={downloadCSV} disabled={disabled}>
             <i className="fa fa-file-text"></i> &nbsp;Export CSV
         </button>
     );

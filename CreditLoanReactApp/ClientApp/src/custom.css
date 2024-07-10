@@ -15,6 +15,15 @@ table {
     background-color: #fff;
 }
 
+.prep-fix {
+    width: 120px;
+}
+
+.login-page {
+    width: 400px;
+    height: 350px;
+}
+
 .label-user {
     font-size: 0.7em;
 }

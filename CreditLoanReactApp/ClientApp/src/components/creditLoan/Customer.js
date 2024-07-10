@@ -1,424 +1,213 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Customer.css';
-import { DbLogger } from './DbLogger';
+﻿//import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { Modal, Button } from "react-bootstrap";
+import ExportCsv from "./exports/ExportCsv"
+import ExportExcel from "./exports/ExportExcel";
+import CustomerDetailDialog from "./dialogs/CustomerDetailDialog";
 
 function Customer() {
-    const apiUrl = process.env.REACT_APP_URL_CREDITLOAN_CUSTOMER;    
-    const [searchId, setSearchId] = useState('');
-    const initialFormState = {
-        customerId: '',
-        name: '',
-        email: '',
-        phoneNumber:'',
-        address: '',
-        password: '',
-        repeatPassword:''
-    };
-    const [user, setUser] = useState(initialFormState);
-    const [token, setToken] = useState('');
+    const [btnDisabled, setBtnDisabled] = useState(true);
     const [pageMessage, setPageMessage] = useState('');
-    const [upsertButton, setUpsertButton] = useState('Save');
-    const [upsertDisable, setUpsertDisable] = useState(true);
-    const [delDisable, setDelDisable] = useState(true);
-    const [showFormPassword, setShowFormPassword] = useState(false);
-    const [showFormUpdate, setShowFormUpdate] = useState(true);
-    const [errorResponses, setErrorResponses] = useState([]);
-    const navigate = useNavigate();
-
-    const handleshowFormPassword = () => {
-        setShowFormPassword(true);
-    };  
-
-    const handleSearchIdChange = (event) => {
-        setPageMessage('');
-        setShowFormPassword(false);
-        setSearchId(event.target.value);
-        setUser(initialFormState);
+    const [showForm, setShowForm] = useState(false);    
+    const initialHeader = {
+        customerId: '',
+        loanAmount: '',
+        tenor: '',
+        interestRate: '',
+        loanDate: ''
     };
+    const [header, setCustomers] = useState(initialHeader);
+    const [users, setUsers] = useState([]);
+    const [token, setToken] = useState('');
+    const [showDialog, setShowDialog] = useState(false);
+    const [selectedRec, setSelectedRec] = useState('');
+
+    useEffect(() => {
+        const token = sessionStorage.getItem('token');
+        if (token) {
+            setShowForm(true);
+            const storedToken = token;
+            if (storedToken) {
+                setToken(storedToken);
+            }
+        }
+        else {
+            setShowForm(false);
+            setPageMessage('Unauthorized, please login');
+        }
+    }, []);
+
+    return (
+        <div className="main-page">
+            <h3 id="tabelLabel" >List Customer</h3>
+            <p>This Page display all customer.</p>            
+            <hr />
+            {showForm &&
+                <FormMain 
+                users={users} setUsers={setUsers}
+                pageMessage={pageMessage} setPageMessage={setPageMessage}
+                btnDisabled={btnDisabled} setBtnDisabled={setBtnDisabled}
+                showDialog={showDialog} setShowDialog={setShowDialog}
+                selectedRec={selectedRec} setSelectedRec={setSelectedRec}
+                />
+            }
+            {pageMessage && (
+                <div className="alert alert-info text-center" role="alert">
+                    {pageMessage}
+                </div>
+            )}
+            {showDialog && (<CustomerDetailDialog setShowDialog={setShowDialog} selectedRec={selectedRec} setSelectedRec={setSelectedRec} />)}            
+
+        </div>
+    );
+}
+
+const FormMain = ({ users, setUsers, setPageMessage, btnDisabled, setBtnDisabled, showDialog, setShowDialog, selectedRec, setSelectedRec } ) => {
+    const tableRef = useRef(null);
+    const [page, setpage] = useState(1);
+    const [pageSize, setpageSize] = useState(10);
+    const initSearchParams = { page: 1, pageSize: 10, nameEmail: '', loanAmount: 0, balance: 0, status: ''}
+    const [searchParams, setSearchParams] = useState(initSearchParams);
+    //temp 
+
+    const handleLookup = useCallback( (row) => {
+        return async (e) => {
+            e.preventDefault();
+            setShowDialog(true);
+            setSelectedRec(row.customerId);
+        }
+    },[showDialog, selectedRec]); 
 
     const handleSearch = async (event) => {
-        setUser(initialFormState);
-
         try {
-            if (searchId === 0 || searchId == null || searchId === '') {
-                setPageMessage('Id required');
-                setTimeout(() => { setPageMessage('') }, 1500);
-                return;
-            }
-
-            setPageMessage('Searching...');
-            const response = await fetch(apiUrl + searchId, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    //'Authorization': 'Bearer' + token
-                }
-            });
-
-            console.log('fetch done...');
-            if (response.ok) {
-
-                console.log('try get data...');
-
-                const data = await response.json();
-                console.log(data);
-                setPageMessage('Data Found!');
-                setUser({
-                    name: data['data']['name'],
-                    email: data['data']['email'],
-                    phoneNumber: data['data']['phoneNumber'],
-                    address: data['data']['address'],
-                });
-                setUpsertButton('Update');
-                setUpsertDisable(false);
-                setDelDisable(false);
-                setTimeout(() => { setPageMessage('') }, 2000);
-                setShowFormUpdate(true);
-                setShowFormPassword(false);
-            } else {
-                setPageMessage('No Data Found!');
-                setUpsertDisable(true);
-                setDelDisable(true);
-                setTimeout(() => { setPageMessage('') }, 2000);
-            }
-        } catch (e) {
-            console.log('page error...');
-            setPageMessage('An error occurred while searching');
-        }
-    };
-
-    const handleUpsert = async (event) => {
-        //event.preventDefault();
-        if (searchId === 0 || searchId == null || searchId ==='') {
-            console.log('try create..')
-            handleCreate(event);
-        } else {
-            console.log('try update..' + searchId)
-            console.log(user);
-            handleUpdate(event);
-        }
-    };
-
-    const handleCreate = async (event) => {
-        //const token = sessionStorage.getItem('token');
-        //setPageMessage('');
-        console.log(user);
-        try {
-
-            if (user.name === '') {                
-                setPageMessage('Name Required');
-                setTimeout(() => { setPageMessage('') }, 1500);
-                return;
-            } 
-            if (user.email === '') {
-                setPageMessage('Email Required');
-                setTimeout(() => { setPageMessage('') }, 1500);
-                return;
-            }
-            if (user.phoneNumber === '') {
-                setPageMessage('Phone Number Required');
-                setTimeout(() => { setPageMessage('') }, 1500);
-                return;
-            }
-            if (user.address === '') {
-                setPageMessage('Address Required');
-                setTimeout(() => { setPageMessage('') }, 1500);
-                return;
-            }
-            if (user.password === '') {
-                setPageMessage('Password Required');
-                setTimeout(() => { setPageMessage('') }, 1500);
-                return;
-            }
-            if (user.repeatPassword === '') {
-                setPageMessage('Repeat Password Required');
-                setTimeout(() => { setPageMessage('') }, 1500);
-                return;
-            }
-            if (user.repeatPassword !== '' && user.password !== '') {
-                if (user.repeatPassword !== user.password) {
-                    setPageMessage('Repeat Password must be match with Password');
-                    setTimeout(() => { setPageMessage('') }, 1500);
-                    return;
-                }
-            }
-
+            console.log(searchParams);
+            //start fetch
+            setPageMessage('loading data...');
             event.preventDefault();
-            setPageMessage('Saving data...');
-
-            console.log(user);
-            console.log('validated, try save...');
-
+            const apiUrl = process.env.REACT_APP_URL_CREDITLOAN_CUSTOMER + 'list';
+            //const apiUrl = process.env.REACT_APP_URL_CREDITLOAN + 'list';
+            console.log(apiUrl);
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer' + token
-                },
-                body: JSON.stringify(user)
-            });
-            console.log(apiUrl);
-
-            const result = await response.json();   
-            if (response.ok) {
-                console.log(result);
-                setPageMessage(`Create success, redirecting to login page`);
-                setUpsertDisable(true);
-                setUser(initialFormState);
-                setShowFormPassword(false);
-                setDelDisable(true);
-                setTimeout(() => { navigate('/login') }, 2000);
-                
-                //DbLogger('user_create_success', 'CREATE', 'Create data from ' + apiUrl + ' success', '-', response.status);
-
-            } else {
-                setErrorResponses(result);
-                console.log(result);
-                //DbLogger('user_create_failed', 'CREATE', 'Create data from ' + apiUrl + ' failed', logResult['message'], logResult['status_code']);
-                console.error(`HTTP error! status: ${response.status}...`);
-                setPageMessage('Save failed ' + result.message);
-            }
-            
-
-        } catch (e) {
-            console.log('page error.....');
-            setPageMessage('An error occurred while processing');
-        }
-    };
-
-    const handleUpdate = async (event) => {
-        //const token = sessionStorage.getItem('token');
-
-        setPageMessage('Start Update...');
-        console.log('start update..');
-        try {
-
-            if (user.name === '') {
-                setPageMessage('Name Required');
-                return;
-            }
-            if (user.email === '') {
-                setPageMessage('Email Required');
-                return;
-            }
-            if (user.phoneNumber === '') {
-                setPageMessage('Phone Number Required');
-                return;
-            }
-            if (user.address === '') {
-                setPageMessage('Address Required');
-                return;
-            }
-
-            event.preventDefault();
-            console.log(user);
-            setPageMessage('Updating data...');
-            const response = await fetch(apiUrl, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
                     //'Authorization': 'Bearer' + token
                 },
-                body: JSON.stringify(user)
+                body: JSON.stringify(searchParams)
             });
 
-            console.log('update done...');
+            const data = await response.json();
+            console.log('try sync data...');
             if (response.ok) {
-                setPageMessage('Update success!');
+                console.log(data);
+                if (data['data'] != null) {
+                    setUsers(data['data']);
+                    setPageMessage(data.message);
+                    setBtnDisabled(false);
+                    setTimeout(() => { setPageMessage('') }, 2000);
+                }
+                else {
+                    setPageMessage(data.message);
+                    setBtnDisabled(true);
+                    setTimeout(() => { setPageMessage('') }, 2000);
+                }
+            } else {
+                //const err = await response.json();
+                console.error(`HTTP error! status: ${response.status}...`);
+                setPageMessage(data['message']);
+                setBtnDisabled(true);
                 setTimeout(() => { setPageMessage('') }, 2000);
-                //DbLogger('user_update_success', 'UPDATE', 'Update data from ' + apiUrl + ' success','-', response.status);
-            } else {
-                const log = await response.json();
-                setErrorResponses(log);
-                //DbLogger('user_update_failed', 'UPDATE', 'Update data from ' + apiUrl + ' failed', log['message'], log['status_code']);
-                //console.error(`HTTP error! status: ${response.status}...`);
-                setPageMessage('Update failed!');
             }
-        } catch (e) {
-            console.log('page error.....');
-            setPageMessage('An error occurred while processing');
+
+            //end fetch
         }
-    };
-
-    const handleDelete = async (event) => {
-        const token = sessionStorage.getItem('token');
-
-        setPageMessage('Removing data...');
-        try {
-
-            const response = await fetch(apiUrl + searchId, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    //'Authorization': 'Bearer' + token
-                },
-                body: JSON.stringify(user)
-            });
-
-            console.log('delete done...');
-            if (response.ok) {
-                setPageMessage('Deleted!');
-                setDelDisable(true);
-                setTimeout(() => { handleClear() }, 2000);
-                //DbLogger('user_delete_success', 'DELETE', 'Delete data from ' + apiUrl + searchId + ' success', '-');
-            } else {
-                //DbLogger('user_delete_failed', 'DELETE', 'Delete data from ' + apiUrl + searchId + ' failed', response.statusText);
-                console.error(`HTTP error! status: ${response.status}...`);
-                setPageMessage('Delete failed!');
-                setTimeout(() => { setPageMessage('') }, 1500);
-}
-        } catch (e) {
+        catch (e) {
             console.log('page error.....');
-            setPageMessage('An error occurred while processing');
+            setPageMessage(e.message);
         }
-    }
-    const handleAdd = async (event) => {
-        setSearchId('');
-        setUser(initialFormState);
-        setUpsertButton('Save');
-        setUpsertDisable(false);
-        setDelDisable(true);
-        setShowFormUpdate(true);
-        handleshowFormPassword();
-    }
-    const handleClear = async (event) => {
-        setSearchId('');
-        setUser(initialFormState);
-        setUpsertButton('Save');
-        setUpsertDisable(true);
-        setDelDisable(true);
-        setShowFormPassword(false);
-        setShowFormUpdate(false);
-        setPageMessage('');
+
     }
 
-    return (
-        <div>
-            <div className="div-center">
-                <div className="content">
-                    <h3>Customer</h3>
-                    <p>Customer CRUD Page</p>
-                    <hr />
-                    <div className="input-group mb-2">
-                        <input type="number" className="form-control" placeholder="Search by Id" required
-                            value={searchId} onChange={handleSearchIdChange} />
-                        <div class="input-group-prepend">
-                            <button type="button" className="btn btn-secondary flex-grow-1" onClick={handleSearch}><i className="fa fa-search"></i></button>
-                        </div>
-                    </div>
-                    <form>
-                        {showFormUpdate &&
-                            <FormUpdate user={user} setUser={setUser} show={showFormUpdate} setShow={setShowFormUpdate} />
-                        }
-                        {showFormPassword &&
-                            <FormCreate user={user} setUser={setUser} show={showFormPassword} setShow={setShowFormPassword} />                                 
-                        }
-                        <hr/>
-                        <div className="row">
-                            <div className="col-8">
-                                <button type="submit" className="btn btn-primary"
-                                    onClick={handleUpsert} disabled={upsertDisable}><i className="fa fa-save"></i>&nbsp; {upsertButton}
-                                </button>                       
-                                <button type="button" className="btn btn-link"
-                                    onClick={handleClear}> Clear Form
-                                </button>                       
-                            </div>
-                            <div className="col-4 text-end">
-                                <button type="button" className="btn btn-success" 
-                                    onClick={handleAdd} title="Add new User" ><i className="fa fa-plus">&nbsp;New</i>
-                                </button>
-                                <span>&nbsp;</span>
-                                <button type="button" className="btn btn-danger"
-                                    onClick={handleDelete} title="Delete User" disabled={delDisable} ><i className="fa fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>                        
-                    </form>
-                    {pageMessage && (
-                        <div className="alert alert-info mt-3 text-center" role="alert">
-                            {pageMessage}
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-}
-const FormUpdate = ({ user, setUser }) => {
-    const handleChange = (e) => {
-        setUser((prev) => ({
-            ...prev, [e.target.id]:e.target.value
-        }));
-    };
-    return (
-        <div>
-            <div className="div-content">          
-
-                <div className="input-group mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">Name</span>
-                    </div>
-                    <input id="name" type="text" className="form-control" placeholder="Name" required
-                        value={user.name} onChange={handleChange} />
-                </div>
-                <div className="input-group mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">Email</span>
-                    </div>
-                    <input id="email" type="email" className="form-control" placeholder="Email" required
-                        value={user.email} onChange={handleChange} />
-                </div>
-                <div className="input-group mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">Phone No</span>
-                    </div>
-                    <input id="phoneNumber" type="text" className="form-control" placeholder="Phone Number" required
-                        value={user.phoneNumber} onChange={handleChange} />
-                </div>
-                <div className="input-group mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">Address</span>
-                    </div>
-                    <input id="address" type="text" className="form-control" placeholder="Address" required
-                        value={user.address} onChange={handleChange} />
-                </div>
-
-            </div>
-        </div>
-    );
-}
-const FormCreate = ({ user, setUser, show, setShow }) => {
-    const handleChange = (e) => {
-        setUser((prev) => ({
+    const handleParamChange = (e) => {
+        setSearchParams((prev) => ({
             ...prev, [e.target.id]: e.target.value
         }));
     };
+
     return (
         <div>
-            <div className="div-content">
-                <div className="input-group mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">Password</span>
-                    </div>
-                    <input id="password" type="password" className="form-control" placeholder="Password" required
-                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                        title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
-                        value={user.password} onChange={handleChange} />
+            <div className="row mb-2">
+                <div className="col-3 text-start">
+                    <ExportExcel excelData={users} fileName="list-customer" disabled={btnDisabled} />
+                    <ExportCsv data={users} fileName="list-customer" disabled={btnDisabled} />
                 </div>
-                <div className="input-group mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">Repeat Password</span>
+                <div className="col-9 justify-content-end d-flex">
+                    <div className="col-7">
+                        <div className="input-group">
+                            <div className="input-group-text">Filter</div>
+                            <input type="text" id="nameEmail" className="form-control" placeholder="by name/email"  value={searchParams.nameEmail}  onChange={handleParamChange} />
+                            <input type="number" id="loanAmount" className="form-control" placeholder="by loan amount" value={searchParams.loanAmount} onChange={handleParamChange} />
+                            <input type="text" id="balance" className="form-control" placeholder="by balance" value={searchParams.balance} onChange={handleParamChange} />
+                        </div>
                     </div>
-                    <input id="repeatPassword" type="password" className="form-control" placeholder="Repeat Password" required
-                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                        title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
-                        value={user.repeatPassword} onChange={handleChange} />
+                    <div className="col">
+                        <div className="input-group">
+                            <div className="input-group-text">Status</div>
+                            <select className="form-select" id="status" onChange={handleParamChange}>
+                                <option selected>Choose...</option>
+                                <option value="new">New</option>
+                                <option value="outstanding">Outstanding</option>
+                                <option value="complete">Complete</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onClick={handleSearch} className="btn btn-success mx-2"> <i className="fa fa-search"></i>&nbsp; Show</button>
                 </div>
             </div>
+            <table className="table table-striped table-hover table-bordered" ref={tableRef}>
+                <thead>
+                    <tr className="text-center">
+                        <th scope="col">Id</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">PhoneNumber</th>
+                        <th scope="col">Address</th>
+                        <th scope="col">Balance</th>
+                        <th scope="col">loan Amount</th>
+                        <th scope="col">Tenor</th>
+                        <th scope="col">Outstanding</th>
+                        <th scope="col">Due Date</th>
+                        <th scope="col">iRate</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {users.map(users => (
+                        <tr key={users.customerId}>
+                            <td>{users.customerId}</td>
+                            <td>{users.name}</td>
+                            <td>{users.email}</td>
+                            <td>{users.phoneNumber}</td>
+                            <td>{users.address}</td>
+                            <td>{users.balance.toLocaleString()}</td>
+                            <td>{users.loanAmount.toLocaleString()}</td>
+                            <td>{users.tenor}</td>
+                            <td>{users.outstanding.toLocaleString()}</td>
+                            <td>{users.dueDate.replace('T00:00:00', '')}</td>
+                            <td>{users.interestRate.toLocaleString()}</td>
+                            <td>
+                                <button className="btn btn-primary btn-sm" onClick={handleLookup(users)}>
+                                    <i className="fa fa-external-link"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
         </div>
     );
-}
+};
 
 
 export default Customer;

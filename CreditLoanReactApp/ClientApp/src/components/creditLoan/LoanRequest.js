@@ -1,7 +1,5 @@
 ﻿import React, { useState, useRef, useEffect } from "react";
-import ExportCsv from './ExportCsv';
-import ExportExcel from "./ExportExcel";
-import CustomerListDialog from "./CustomerListDialog";
+import CustomerListDialog from "./dialogs/CustomerListDialog";
 
 function LoanRequest() {
     const [btnDisabled, setBtnDisabled] = useState(true);
@@ -49,7 +47,6 @@ function LoanRequest() {
                 setShowDialog={setShowDialog} 
             />
             }
-            <hr />
             {showForm &&
                 <FormDetail
                     details={details} setDetails={setDetails}
@@ -199,18 +196,24 @@ const FormHeader = ({ header, setHeader, setDetails, setPageMessage, initialHead
         setShowDialog(true);
     };
 
+    const handleChange = (e) => {
+        setHeader((prev) => ({
+            ...prev, [e.target.id]: e.target.value
+        }));
+    };
+
     return (
         <div>
 
         <form>
-            <div class="input-group mb-2">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="basic-addon1">Customer id </span>
+            <div className="input-group mb-2">
+                <div className="input-group-prepend">
+                    <span className="input-group-text" id="basic-addon1">Customer id </span>
                 </div>
-                <input type="text" class="form-control" id="customerId" placeholder="Select Customer Id" aria-label="CustomerId" aria-describedby="basic-addon1"
-                    value={header.customerId}  />
-                <div class="input-group-append">
-                    <button class="btn btn-secondary" type="button" onClick={handleLookup}><i className="fa fa-search mx-1"></i>Lookup</button>
+                    <input type="text" className="form-control" id="customerId" placeholder="Select Customer Id" aria-label="CustomerId" aria-describedby="basic-addon1"
+                        value={header.customerId} onChange={handleChange} />
+                <div className="input-group-append">
+                    <button className="btn btn-secondary" type="button" onClick={handleLookup}><i className="fa fa-search mx-1"></i>Lookup</button>
                     {/*                <button className="btn btn-secondary" onClick={handleSearch} title="search data"> <i className="fa fa-search"></i>Search</button>*/}
                     <button className="btn btn-primary mx-1" onClick={handleSimulate}> <i className="fa fa-save"></i>&nbsp;Request</button>
                     <button className="btn btn-clear" onClick={handleClear} title="clear form"><i className="fa fa-eraser"></i></button>
@@ -218,16 +221,16 @@ const FormHeader = ({ header, setHeader, setDetails, setPageMessage, initialHead
             </div>
             <div className="row">
                 <div className="col">
-                    <div class="input-group mb-2">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Loan Amount</span>
+                    <div className="input-group mb-2">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text prep-fix">Loan Amount</span>
                         </div>
                         <input type="number" className="form-control" id="loanAmount" placeholder="Jumlah Pinjaman" title="Jumlah Pinjaman"
-                            value={header.loanAmount} onChange={e => setHeader({ ...header, loanAmount: e.target.value })} />
+                            value={header.loanAmount} onChange={handleChange} />
                     </div>
-                    <div class="input-group mb-2">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Tenor</span>
+                    <div className="input-group mb-2">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text prep-fix">Tenor</span>
                         </div>
                         <input type="number" className="form-control" id="tenor" placeholder="Lama Pinjaman" title="Tenor" min="1" max="48"
                             value={header.tenor} onChange={e => setHeader({ ...header, tenor: e.target.value })} />
@@ -236,19 +239,19 @@ const FormHeader = ({ header, setHeader, setDetails, setPageMessage, initialHead
                 </div>
                 <div className="col">
 
-                    <div class="input-group mb-2">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Interest Rate</span>
+                    <div className="input-group mb-2">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text prep-fix">Interest Rate</span>
                         </div>
                         <input type="number" className="form-control" id="interestRate" placeholder="Interest Rate" title="Interest Rate"
-                            value={header.interestRate} onChange={e => setHeader({ ...header, interestRate: e.target.value })} />
+                                value={header.interestRate} onChange={handleChange} />
                     </div>
-                    <div class="input-group mb-2">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Loan Date</span>
+                    <div className="input-group mb-2">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text prep-fix">Loan Date</span>
                         </div>
                         <input type="date" className="form-control" id="loanDate" placeholder="[yyyy-mm-dd]"
-                            value={header.loanDate} onChange={e => setHeader({ ...header, loanDate: e.target.value })} />
+                                value={header.loanDate} onChange={handleChange} />
                     </div>
 
                 </div>
@@ -257,8 +260,6 @@ const FormHeader = ({ header, setHeader, setDetails, setPageMessage, initialHead
         </div>
     );
 }
-
-
 
 const FormDetail = ({ details }) => {
     const tableRef = useRef(null);

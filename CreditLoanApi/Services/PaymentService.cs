@@ -52,25 +52,42 @@ namespace CreditLoanApi.Services
         }
 
 
-        List<PaymentDto> ReadStream() //MemoryStream ms
+        List<PaymentDto> ReadStream() 
         {
-            string urlFtp = _configuration["FtpUrl"];//"ftp://192.168.137.163:21/";
-            string folder = _configuration["FtpFolder"]; // "inbound";
-            string file = _configuration["PaymentFile"]; //"cust-payment.csv";
-            List<PaymentDto> data = null;
-
-            _logger.LogInformation($"{urlFtp}/{folder}/{file}");
-            FtpWebRequest request = (FtpWebRequest)WebRequest.Create($"{urlFtp}/{folder}/{file}");
-            request.Method = WebRequestMethods.Ftp.DownloadFile;
-            //request.Credentials = new NetworkCredential("ftpuser", "ftppwd");
-            List<string> lines = new List<string>();
-            using (FtpWebResponse listResponse = (FtpWebResponse)request.GetResponse())
-            using (Stream listStream = listResponse.GetResponseStream())
+            try
             {
-                data = ReadCSV<PaymentDto>(listStream).ToList();
+                string urlFtp = _configuration["FtpUrl"];
+                string folder = _configuration["FtpFolder"];
+                string file = _configuration["PaymentFile"];
+                string usr = _configuration["FtpUser"];
+                string pass = _configuration["FtpPass"];
+                string access = _configuration["FtpAccess"];
+                List<PaymentDto> data = null;
+
+                _logger.LogInformation($"{urlFtp}/{folder}/{file}");
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create($"{urlFtp}/{folder}/{file}");
+                request.Method = WebRequestMethods.Ftp.DownloadFile;
+                if (access != "anonymous")
+                {
+                    request.Credentials = new NetworkCredential(usr, pass);
+                }
+                List<string> lines = new List<string>();
+                using (FtpWebResponse listResponse = (FtpWebResponse)request.GetResponse())
+                using (Stream listStream = listResponse.GetResponseStream())
+                {
+                    data = ReadCSV<PaymentDto>(listStream).ToList();
+
+                }
+                return data;
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine(ex.ToString());
+                _logger.LogError(ex.ToString());
+                return null;
 
             }
-            return data;
+
         }
 
         public async Task<List<PaymentDtoOut>> SyncPaymentFromFtp()
@@ -95,10 +112,6 @@ namespace CreditLoanApi.Services
                     payment.CustomerId = listPayment[i].CustomerId;
                     payment.PaymentAmount = listPayment[i].PaymentAmount;
                     payment.PaymentDate = listPayment[i].PaymentDate;
-                    /* map PaymentId to customerId, rowNo, loanCode */
-                    
-                    //unused 
-                    //PaymentCodeDto syncCode = mapPaymentCode(payment.PaymentId);
 
                     /* only save if paymentId not exist */
                     var oldPay = _paymentRepository.Get(payment.PaymentId).Result;
@@ -123,7 +136,6 @@ namespace CreditLoanApi.Services
                             detail.PaymentId = payment.PaymentId;
                             detail.PaymentDate = payment.PaymentDate;
                             var saveDetail = _detailRepository.Update(detail).Result;
-
                         }
                     }
 
@@ -142,9 +154,8 @@ namespace CreditLoanApi.Services
                         PaymentDate = pay.PaymentDate
                     };
 
-                    // unused mapPaymentCode
-                    //PaymentCodeDto syncCode = mapPaymentCode(pay.PaymentId);
                     var cust = _customerRepository.Get(pay.CustomerId).Result;
+
                     /* skip if customer id not exist */
                     if (cust == null)
                     {
@@ -153,7 +164,9 @@ namespace CreditLoanApi.Services
                         outListPayment.Add(outPay);
                         continue;
                     }
+
                     var custLoan = _detailRepository.GetByCustomer(pay.CustomerId).Result;
+
                     /* skip if installment no not exist */
                     var rowNoExist = (from r in custLoan where r.RowNo == pay.InstallmentNo select r);
                     if (rowNoExist == null)
@@ -163,9 +176,11 @@ namespace CreditLoanApi.Services
                         outListPayment.Add(outPay);
                         continue;
                     }
+
                     /* update customer : balance, outstanding and next duedate */
                     var nd1 = (from n in custLoan where n.PaymentStatus == "outstanding" orderby n.RowNo select n).First();
                     var sumPaid = (from n in custLoan where n.PaymentStatus == "paid" orderby n.RowNo select n.TotalAmount).Sum();
+
                     /* balance = cust.LoanAmount - sum(totalAmount) where status = paid */
                     cust.Balance = cust.LoanAmount - sumPaid;
                     cust.Outstanding = nd1.RemainingAmount;

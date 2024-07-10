@@ -22,15 +22,9 @@ namespace CreditLoanApi.Repositories
 
         public int AddDbLogger(DbLogger dbLogger)
         {
-            DbLogger logger = new DbLogger();
-            logger.log_name = dbLogger.log_name;
-            logger.log_category = dbLogger.log_category;
-            logger.log_message = dbLogger.log_message;
-            logger.log_error = dbLogger.log_error;
-            logger.log_code = dbLogger.log_code;
-            logger.log_time = DateTime.Now;//DateTime.ParseExact(dbLogger.log_time + " 00:00:00", "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+            dbLogger.LogTime = DateTime.Now;
 
-            _context.dbLoggers.Add(logger);
+            _context.dbLoggers.Add(dbLogger);
             return _context.SaveChanges();
 
         }

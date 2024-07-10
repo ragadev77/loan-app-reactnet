@@ -39,7 +39,7 @@ export class Home extends Component {
             <div>
                 <div className="row">
                     <div className="col-11">
-                        <h1 id="tabelLabel" >Welcome <span className="user-name">{userName}</span></h1>
+                        <h1 id="tabelLabel" >Welcome to React.Net App Demo <span className="user-name">{userName}</span></h1>
                         <p>This App demonstrates credit loan simulation. 
                         Developed using Asp.Net Web API - React Js</p>
                     </div>

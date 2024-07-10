@@ -1,6 +1,6 @@
 ﻿import React, { useState, useRef, useEffect } from "react";
-import ExportCsv from './ExportCsv';
-import ExportExcel from "./ExportExcel";
+import ExportCsv from './exports/ExportCsv';
+import ExportExcel from "./exports/ExportExcel";
 
 function ReportMonthly() {
     const [btnDisabled, setBtnDisabled] = useState(true);
@@ -52,6 +52,8 @@ const FormDetail = ({ details, setDetails, setPageMessage, btnDisabled, setBtnDi
     const tableRef = useRef(null);
     const [month, setMonth] = useState(1);
     const [year, setYear] = useState(2024);
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
 
     const handleSync = async (event) => {
 
@@ -60,7 +62,9 @@ const FormDetail = ({ details, setDetails, setPageMessage, btnDisabled, setBtnDi
             event.preventDefault();
             console.log(month);
             console.log(year);
-            const apiUrl = process.env.REACT_APP_URL_CREDITLOAN + 'report?month=' + month + '&year=' + year;
+            const apiUrl = process.env.REACT_APP_URL_CREDITLOAN +
+                            'report?month=' + month + '&year=' + year +
+                            '&page=' + page + '&pageSize=' + pageSize;
             console.log(apiUrl);
             const response = await fetch(apiUrl, {
                 method: 'GET',
@@ -114,34 +118,45 @@ const FormDetail = ({ details, setDetails, setPageMessage, btnDisabled, setBtnDi
         setDetails([]);
     };
 
+    const handlePageChange = (event) => {
+        setPage(event.target.value);
+    };
+    const handlePageSizeChange = (event) => {
+        setPageSize(event.target.value);
+    };
+
     return (
         <div>
             <div className="row">
-                <div className="col-8 border">
+                <div className="col-3">
                     <ExportExcel excelData={details} fileName="creditloan_report" disabled={btnDisabled} />
                     <ExportCsv data={details} fileName="creditloan_report" disabled={btnDisabled} />
                 </div>
-                <div className="col-4 justify-content-end d-flex">
-                    <p className="x-label">month</p>
-                    <input type="number" min="1" max="12" placeholder="input month"
-                        value={month} onChange={handleMonthChange} required>
-                    </input>
-                    <p className="x-label">year</p>
-                    <input type="number" min="2020" max="2025" placeholder="input year"
-                        value={year} onChange={handleYearChange} required>
-                    </input>
-                    <button onClick={handleSync} className="btn btn-success"> <i className="fa fa-search"></i>&nbsp; Show</button>
+                <div className="col-9 justify-content-end d-flex">
+                    <div className="col-8">
+                        <div className="input-group">
+                            <div className="input-group-text">Page</div>
+                            <input type="number" id="page" className="form-control" defaultValue="0" value={page} onChange={handlePageChange} />
+                            <div className="input-group-text">PageSize</div>
+                            <input type="number" id="pageSize" className="form-control" defaultValue="0" value={pageSize} onChange={handlePageSizeChange} />
+                            <div className="input-group-text">Month</div>
+                            <input type="number" className="form-control" min="1" max="12" placeholder="input month" value={month} onChange={handleMonthChange} required />
+                            <div className="input-group-text">Year</div>
+                            <input type="number" className="form-control" min="2020" max="2025" placeholder="input year" value={year} onChange={handleYearChange} required />
+                        </div>
+                    </div>
+                    <button onClick={handleSync} className="btn btn-success mx-2"> <i className="fa fa-search"></i>&nbsp; Show</button>
                 </div>
-            </div>
-            <table className="table table-striped table-hover table-bordered" ref={tableRef}>
+            </div>            
+            <table className="table table-striped table-hover table-bordered my-2" ref={tableRef}>
                 <thead>
                     <tr className="text-center">
-                        <th scope="col">Cst Id</th>
+                        <th scope="col">CstId</th>
                         <th scope="col">Loan Amt</th>
                         <th scope="col">Balance</th>
                         <th scope="col">Outstanding</th>
 
-                        <th scope="col">RowNo</th>
+                        <th scope="col">Seq</th>
                         <th scope="col">DueDate</th>
                         <th scope="col">Total Amt</th>
                         <th scope="col">Main Amt</th>
@@ -155,8 +170,8 @@ const FormDetail = ({ details, setDetails, setPageMessage, btnDisabled, setBtnDi
                 </thead>
                 <tbody>
                     {details.map(details => (
-                        <tr key={details.customerId}>
-                            <td width="100px">{details.customerId}</td>
+                        <tr key={details.rowId}>
+                            <td width="2%">{details.customerId}</td>
                             <td>{details.loanAmount.toLocaleString()}</td>
                             <td>{details.balance.toLocaleString()}</td>
                             <td>{details.outstanding.toLocaleString()}</td>
